@@ -4,7 +4,8 @@
 ## About Page: `hexo new page about`
 ## Tags Cloud Page: `hexo new page tags`
 menu:
-  博客首页: http://blog.inkroom.cn
+  首页: http://blog.inkroom.cn
+  相册: http://image.inkroom.cn
 
 
 # Link to your avatar | 填写头像地址
