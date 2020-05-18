@@ -173,7 +173,8 @@ path指定第三方依赖目录
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-           <!-- 此处将脚本复制两份，分别对应类unix和windows系统，注意，maven过滤之后的文件在target目录下 --> <source>${project.build.directory}/classes/start.sh</source>
+           <!-- 此处将脚本复制两份，分别对应类unix和windows系统，注意，maven过滤之后的文件在target目录下 -->
+            <source>${project.build.directory}/classes/start.sh</source>
             <outputDirectory>/</outputDirectory>
             <destName>start.bat</destName>
         </file>

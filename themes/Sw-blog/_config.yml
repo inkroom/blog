@@ -5,8 +5,7 @@
 ## Tags Cloud Page: `hexo new page tags`
 menu:
   首页: http://blog.inkroom.cn
-  相册: http://image.inkroom.cn
-
+  相册: /相册
 
 # Link to your avatar | 填写头像地址
 avatar: /img/avatar.png
