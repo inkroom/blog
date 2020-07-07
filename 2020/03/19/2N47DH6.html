@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用位运算存储用户状态 | 墨盒</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用位运算来存储用户状态、权限；便于后期扩展">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用位运算存储用户状态">
+<meta property="og:url" content="http://blog.inkroom.cn/2020/03/19/2N47DH6.html">
+<meta property="og:site_name" content="墨盒">
+<meta property="og:description" content="使用位运算来存储用户状态、权限；便于后期扩展">
+<meta property="og:locale" content="zn_CH">
+<meta property="article:published_time" content="2020-03-19T08:37:06.000Z">
+<meta property="article:modified_time" content="2020-05-14T09:19:16.433Z">
+<meta property="article:author" content="inkbox">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="位运算">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet" />
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">inkbox</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">个人博客</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder="搜索一下" autocomplete="off">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a  href="http://blog.inkroom.cn">首页</a></li>
+                        
+                            <li><a  href="/%E7%9B%B8%E5%86%8C">相册</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl github"  target="_blank" href="https://github.com/inkroom" title="github">github</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/SpringBoot/" style="font-size: 15px;">SpringBoot</a> <a href="/tags/cache/" style="font-size: 10px;">cache</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/idea/" style="font-size: 10px;">idea</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/json/" style="font-size: 10px;">json</a> <a href="/tags/log/" style="font-size: 10px;">log</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/mybatis/" style="font-size: 10px;">mybatis</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/netty/" style="font-size: 10px;">netty</a> <a href="/tags/pdf/" style="font-size: 10px;">pdf</a> <a href="/tags/sm2/" style="font-size: 10px;">sm2</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/%E4%BA%8B%E5%8A%A1/" style="font-size: 10px;">事务</a> <a href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" style="font-size: 10px;">位运算</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 10px;">分布式</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 12.5px;">前端</a> <a href="/tags/%E5%8A%A0%E5%AF%86/" style="font-size: 12.5px;">加密</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 17.5px;">后端</a> <a href="/tags/%E5%BA%8F%E5%88%97%E5%8C%96/" style="font-size: 10px;">序列化</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 10px;">数据库</a> <a href="/tags/%E6%96%87%E6%A1%A3/" style="font-size: 10px;">文档</a> <a href="/tags/%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86/" style="font-size: 10px;">日志采集</a> <a href="/tags/%E6%A2%A6/" style="font-size: 10px;">梦</a> <a href="/tags/%E6%A2%A6%E4%B8%AD%E6%A2%A6/" style="font-size: 10px;">梦中梦</a> <a href="/tags/%E7%AD%BE%E5%90%8D/" style="font-size: 10px;">签名</a> <a href="/tags/%E8%B7%A8%E5%9F%9F/" style="font-size: 10px;">跨域</a>
+                    </div>
+                </section>
+                
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">inkbox</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="//img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">inkbox</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">个人博客</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="http://blog.inkroom.cn">首页</a></li>
+                
+                    <li><a href="/%E7%9B%B8%E5%86%8C">相册</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="github" target="_blank" href="https://github.com/inkroom" title="github">github</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-后端-java-使用位运算存储用户状态" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2020/03/19/2N47DH6.html" class="article-date">
+      <time datetime="2020-03-19T08:37:06.000Z" itemprop="datePublished">2020-03-19</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用位运算存储用户状态
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/java/">java</a><a class="article-category-link" href="/categories/java/%E5%90%8E%E7%AB%AF/">后端</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" rel="tag">位运算</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>使用位运算来存储用户状态、权限；便于后期扩展</p>
+<a id="more"></a>
+
+
+
+<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>很多项目中都会存储用户状态，诸如用户类型、相关操作权限等等。</p>
+<p>比较常用的方案有两种。</p>
+<ul>
+<li>使用一个int类型字段存储用户状态，不同的数字代表不同的状态</li>
+<li>比较特殊的状态需要另外使用字段存储</li>
+</ul>
+<p>方案一的问题在于无法存储复合状态。例如某个用户既是普通用户又处于封禁状态，想要使用方案一存储则数字会相当的多，不利于开发记忆。</p>
+<p>因此我使用<strong>位运算</strong>方案来存储状态</p>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>位运算的思路为利用一个int(或者long)的不同位来存储不同状态。</p>
+<p>例如 状态数字 <strong>10</strong>，换算成二进制长这样：</p>
+<blockquote>
+<p>1010</p>
+</blockquote>
+<p>这样一看，一个数字 <strong>10</strong> 就有四个位，可以存储四个状态。</p>
+<p>这个状态就可以这样解释：</p>
+<blockquote>
+<p>最低位的0代表这是一个普通用户<br>第二低的1代表用户未曾登录<br>第二高的0代表用户可以使用手机号登录<br>最高位的1代表用户要接收消息通知</p>
+</blockquote>
+<p>当然，每一位代表的意义在此并不重要。重要的是，每一个bit有两种状态：0和1，需要定义的是0代表enable还是1代表disable。这影响的是每一个bit的实际意义，也和接下来的方法定义有关。</p>
+<hr>
+<p>同时，为了后续扩展，在进行状态定义的时候，最好要从低位往高位定义，高位未定义时必定为0。当用户需要增加新状态时，将新状态定义为1，那么原本的用户的状态数据可以不作修改。</p>
+<hr>
+<p>存储效率：</p>
+<blockquote>
+<p>以int类型为例，int占4个字节，共有4x8=32位，意为可以同时存储<strong>32</strong>种不同的状态，在实际意义上则代表<strong>2^32</strong>种现实意义</p>
+</blockquote>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>首先，<br>需要对要用到的位进行定义。</p>
+<blockquote>
+<p>在此使用枚举来进行定义；</p>
+</blockquote>
+<p>同时，<br>需要标明状态被定位在哪一个bit上</p>
+<blockquote>
+<p>这一点很容易实现，使用<strong>2</strong>的幂指数即可；比如2=2^1，代表定位到从低往高数第二位的位置上</p>
+</blockquote>
+<p>因此枚举定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> UserStatus &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//以下均为代表不可用状态</span></span><br><span class="line"></span><br><span class="line">    USERNAME(<span class="number">1</span>),<span class="comment">//是否可以使用username字段登录</span></span><br><span class="line">    MOBILE(<span class="number">2</span>),<span class="comment">//是否可以使用手机号登录</span></span><br><span class="line">    SMSCODE(<span class="number">4</span>),<span class="comment">//是否可以通过短信验证码登录</span></span><br><span class="line">    SIGN(<span class="number">8</span>),<span class="comment">//是否可签署合同</span></span><br><span class="line">    SEND(<span class="number">16</span>),<span class="comment">//是否发送合同</span></span><br><span class="line">    INIT_PASSWORD(<span class="number">32</span>),<span class="comment">//是否是初始密码,0代表是初始密码，一个用户刚注册或导入的情况下都是初始密码（默认密码）</span></span><br><span class="line">    INIT_SIGN_PASSWORD(<span class="number">64</span>),<span class="comment">//是否是默认的签署密码，0代表是默认密码</span></span><br><span class="line">    DIY_VERIFY(<span class="number">128</span>),<span class="comment">//是否是修改过的的身份认证信息</span></span><br><span class="line">    RECEIVE_SMS(<span class="number">256</span>),<span class="comment">//接收短信通知</span></span><br><span class="line">    RECEIVE_EMAIL(<span class="number">512</span>),<span class="comment">//接收邮件通知</span></span><br><span class="line">    RECEIVE_WEB_NOTICE(<span class="number">1024</span>),<span class="comment">//接收站内通知</span></span><br><span class="line">    ;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> code;<span class="comment">//需要指定的位数，应该都是2的幂指数，指定位上为1代表不允许</span></span><br><span class="line">    <span class="keyword">boolean</span> userDiy;<span class="comment">//是否允许普通用户自己修改指定状态</span></span><br><span class="line"></span><br><span class="line">    UserStatus(<span class="keyword">int</span> code) &#123;</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">code</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>接下来需要对于状态的一些操作函数。我一共定义了三种：<strong>is</strong>、<strong>enable</strong>、<strong>disable</strong>；</p>
+<h4 id="is函数"><a href="#is函数" class="headerlink" title="is函数"></a>is函数</h4><p>首先是<strong>is</strong>函数：</p>
+<p>方法申明如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">is</span><span class="params">(<span class="keyword">int</span> code, BitInfo status)</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+<p>其中：<strong>code</strong>代表存储了复合状态的状态数据，status代表某种定义的状态，我再次定义了一个BitInfo接口用于扩展，简单的理解成一个2的幂指数即可。</p>
+<p>那么is函数的意义为：在code中的status对应位上是否为<strong>1</strong></p>
+<p>我使用的是 对应位 为 <strong>1</strong>，实际上0或者1不影响方法定义，只会对使用上有影响</p>
+<hr>
+<p>接下来就是位运算的部分了</p>
+<p>可以把这个函数实现分成两部分：一、取出指定位的数据；二、判断数字</p>
+<p>还是拿 <strong>10</strong> 举例，在此我需要判断其从低往高数第二位是否为0<br>那么code传递的应该是10，status代表的幂指数应该是2</p>
+<p><strong>10</strong>化为二进制如下</p>
+<blockquote>
+<p>1010</p>
+</blockquote>
+<p><strong>2</strong>化为二进制如下</p>
+<blockquote>
+<p>0010</p>
+</blockquote>
+<p>很明显可以看出，只需要将两个数字进行与(&amp;)运算，即可以拿出指定位；准确的说是将无关位置为0，指定位不变。</p>
+<p>结果是：</p>
+<blockquote>
+<p>0010</p>
+</blockquote>
+<p>再与<strong>2</strong>做个比对即可。</p>
+<hr>
+<p>因此方法实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">is</span><span class="params">(<span class="keyword">int</span> code, BitInfo status)</span> </span>&#123;</span><br><span class="line">     <span class="comment">//和指定位进行与运算后，对应的结果为0，即为允许，status.code 为1,代表不允许</span></span><br><span class="line">    <span class="keyword">return</span> (code &amp; status.code()) != status.code();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="disable"><a href="#disable" class="headerlink" title="disable"></a>disable</h4><p>disable函数的意义是：将指定位置为1。</p>
+<p>要求：</p>
+<ul>
+<li>随便一个状态数字在disable之后进行is返回false</li>
+<li>对状态数字进行反复disable，结果都不能有变化(意思是不能简单的使用取反操作)</li>
+</ul>
+<p>方法申明如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">disable</span><span class="params">(<span class="keyword">int</span> code, BitInfo status)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>在此将<strong>10</strong>的最低位置为1</p>
+<p>相关参数为</p>
+<ul>
+<li>code:10</li>
+<li>status:1</li>
+</ul>
+<p>1的二进制如下</p>
+<blockquote>
+<p>0001</p>
+</blockquote>
+<p>很明显可以看出，只需要将两个数字进行 或(|)运算即可</p>
+<hr>
+<p>实现如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">disable</span><span class="params">(<span class="keyword">int</span> code, <span class="keyword">int</span> status)</span> </span>&#123;</span><br><span class="line">   <span class="comment">//将指定位数置为1 即不允许</span></span><br><span class="line">   <span class="keyword">return</span> code | status;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="enable"><a href="#enable" class="headerlink" title="enable"></a>enable</h4><p>enable函数的意义是：将指定位置为0。</p>
+<p>要求：</p>
+<ul>
+<li>随便一个状态数字在enable之后进行is返回true</li>
+<li>对状态数字进行反复enable，结果都不能有变化(意思是不能简单的使用取反操作)</li>
+</ul>
+<p>方法申明如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">enable</span><span class="params">(<span class="keyword">int</span> code, BitInfo status)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>在此将<strong>10</strong>的最低位置为1</p>
+<p>相关参数为</p>
+<ul>
+<li>code:10</li>
+<li>status:1</li>
+</ul>
+<p>在disable函数中，已经将指定位置为1了，那么只需要把这个1再给变回来即可，且不能影响其他位</p>
+<p>因此只需要将10和2先后进行<strong>或</strong>运算和<strong>异或</strong>运算即可</p>
+<hr>
+<p>方法实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">enable</span><span class="params">(<span class="keyword">int</span> code, BitInfo status)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将指定位数置为0 即允许</span></span><br><span class="line">    <span class="comment">//将位和1 或，则指定位一定为1，再与status异或，指定位则为0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (code | status.code()) ^ status.code();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>那么在使用上也很简单。</p>
+<p>例如我要判断 状态 <strong>254</strong> 是否可以接收短信，只需要这样调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">BitInfo.is(<span class="number">254</span>,UserStatus.RECEIVE_SMS)</span><br></pre></td></tr></table></figure>
+
+<p>返回true即代表可以接收短信</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>使用位运算存储状态有以下优点：</p>
+<ul>
+<li>节约空间</li>
+<li>易于扩展</li>
+<li>可以同时存储复合状态</li>
+</ul>
+<p>但是缺点也很明显：</p>
+<ul>
+<li>不够直观，必须通过程序才能看出具体状态含义</li>
+<li>逻辑复杂，过于专注底层位运算可能会搞混，但是只关注抽象层就好得多</li>
+</ul>
+<hr>
+<p>上述代码中还是有一定问题的。例如同时enable多个状态，调用上就比较复杂，会出现很多括号；这可以通过链式调用来解决，我在此就不作修改了。</p>
+
+      
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2020/03/19/2N47DH6.html">使用位运算存储用户状态</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 inkbox 的个人博客">inkbox</a></p>
+        <p><span>发布时间:</span>2020年03月19日 - 16时37分</p>
+        <p><span>最后更新:</span>2020年05月14日 - 17时19分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2020/03/19/2N47DH6.html" title="使用位运算存储用户状态">http://blog.inkroom.cn/2020/03/19/2N47DH6.html</a>
+            <span class="copy-path" data-clipboard-text="原文: http://blog.inkroom.cn/2020/03/19/2N47DH6.html　　作者: inkbox" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" target="_blank" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/2020/05/13/1REFGMK.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          vue纯数字input
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/03/16/29NXD3S.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">左右两栏各自滚动</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思路"><span class="toc-number">2.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现"><span class="toc-number">3.</span> <span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#定义"><span class="toc-number">3.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#is函数"><span class="toc-number">3.2.</span> <span class="toc-text">is函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#disable"><span class="toc-number">3.3.</span> <span class="toc-text">disable</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#enable"><span class="toc-number">3.4.</span> <span class="toc-text">enable</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用"><span class="toc-number">4.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2020/05/13/1REFGMK.html" title="上一篇: vue纯数字input">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/2020/03/16/29NXD3S.html" title="下一篇: 左右两栏各自滚动">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/05/18/126CEWS.html">日志采集</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/17/1N5Y02F.html">dream</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/15/1BZHG4N.html">基于netty的文件传输</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/13/14DPE6D.html">mysql事务冲突</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/13/21DB9B8.html">java security</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/13/2Q6VVTX.html">SpringBoot依赖外置</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/13/VRVDZ9.html">idea无法识别SpringBoot @占位符</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/13/20T898X.html">SpringBoot实现jsonp跨域</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/13/1REFGMK.html">vue纯数字input</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/19/2N47DH6.html">使用位运算存储用户状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/16/29NXD3S.html">左右两栏各自滚动</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/12/2WMCQ45.html">json反序列化问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/08/1B59D5C.html">SpringCache的事务管理与单元测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/11/04/1CXKHHK.html">SpringBoot配置文件优先级</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/11/01/2EEH37B.html">实现swagger2不显示类名</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/19/9ED8ZM.html">sm2签章</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/17/2SFDH34.html">aop切面类</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/12/3HEJMC.html">SpringBoot实现分布式session</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/12/29N9S98.html">mybatis-plus缓存配置</a></li></ul>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2020 inkbox
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="http://bestwing.me" target="_blank">Sw'blog</a> by Swing
+            </div>
+        </div>
+        
+    </div>
+</footer>
+
+    </div>
+    
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 4;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+    <script type="text/javascript">
+      window.onload = function(){
+        document.getElementById("search").onclick = function(){
+            console.log("search")
+            search();
+        }
+      }
+      function search(){
+        (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+        (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+        e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+        })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+        _st('install','A1Pz-LKMXbrzcFg2FWi6','2.0.0');
+      }
+    </script>
+
+  </div>
+</body>
+</html>
