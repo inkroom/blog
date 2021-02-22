@@ -3043,7 +3043,7 @@ a.gitment-editor-footer-tip:hover {
   transition: color 0.3s;
 }
 .article-title:hover {
-  color: #fff;
+  color: #d6cff0;
 }
 #more {
   display: none;
@@ -5094,16 +5094,16 @@ pre .link_url {
   }
 }
 body {
-  background: url("../img/p1543.jpg");
+  background: url("https://i.loli.net/2021/02/22/zWj1XDpm7aKOGgw.jpg");
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
   background-attachment: fixed;
-  color: #000;
+  color: #fff;
 }
 #container .left-col {
   background: none !important;
 }
 .article-title {
-  color: #000;
+  color: #fff;
 }
