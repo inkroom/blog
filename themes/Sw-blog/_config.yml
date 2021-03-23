@@ -6,6 +6,7 @@
 menu:
   首页: http://blog.inkroom.cn
   相册: /相册
+  笔记: /categories/note
 
 # Link to your avatar | 填写头像地址
 avatar: /img/avatar.png
@@ -106,7 +107,7 @@ excerpt_link: more #修改more>>的文字
 
 # 是否显示边栏中的搜索框（仅样式，未添加搜索功能）
 #Search Box in left column
-search_box: true
+search_box: false
 search:
   path: search.json
   field: post

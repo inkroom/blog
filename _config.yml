@@ -60,7 +60,12 @@ index_generator:
   path: ''
   per_page: 5
   order_by: -date
-
+  
+index2_generator:
+  per_page: 5
+  order_by: -date
+  exclude:
+    - category note
 # Category & Tag
 default_category: uncategorized
 category_map:
