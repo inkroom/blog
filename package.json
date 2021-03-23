@@ -5,26 +5,36 @@
   "scripts": {
     "build": "hexo generate",
     "clean": "hexo clean",
-    "deploy": "hexo clean && hexo deploy -g",
-    "server": "hexo server"
+    "deploy": "npm run copy && hexo clean && hexo deploy -g",
+    "server": "hexo server",
+    "copy": " cp -R hexo-encrypt-category node_modules  ",
+    "dev": " node config/server.js server"
   },
   "hexo": {
-    "version": "4.2.0"
+    "version": "5.4.0"
   },
   "dependencies": {
-    "hexo": "^4.0.0",
+    "hexo": "^5.0.0",
     "hexo-all-minifier": "^0.5.3",
+    "hexo-cli": "^4.2.0",
     "hexo-deployer-git": "^2.1.0",
+    "hexo-encrypt-category": "^1.0.0",
     "hexo-enhancer": "^1.0.8",
     "hexo-generator-archive": "^1.0.0",
     "hexo-generator-category": "^1.0.0",
-    "hexo-generator-index": "^1.0.0",
+    "hexo-generator-index2": "^0.2.0",
     "hexo-generator-search": "^2.4.0",
     "hexo-generator-tag": "^1.0.0",
     "hexo-renderer-ejs": "^1.0.0",
     "hexo-renderer-marked": "^2.0.0",
     "hexo-renderer-stylus": "^1.1.0",
-    "hexo-server": "^1.0.0"
+    "hexo-server": "^1.0.0",
+    "mozjpeg": "^7.0.0",
+    "optipng-bin": "^7.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chokidar": "^3.5.1",
+    "ejs": "^3.1.6",
+    "fs-extra": "^9.1.0"
+  }
 }
