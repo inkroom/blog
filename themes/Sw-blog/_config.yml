@@ -1,12 +1,13 @@
 # >>> Basic Setup | 基础设置 <<<
 
+author: inkbox
 # Header | 主菜单
 ## About Page: `hexo new page about`
 ## Tags Cloud Page: `hexo new page tags`
 menu:
   首页: http://blog.inkroom.cn
   相册: /相册
-  笔记: /categories/note
+  笔记: /tags/note
 
 # Link to your avatar | 填写头像地址
 avatar: /img/avatar.png
