@@ -200,3 +200,17 @@ path指定第三方依赖目录
 
 完整版的目录结构
 ![04ACB025-7C19-4a98-9351-2E6AD9007E23](https://user-images.githubusercontent.com/27911304/70195270-30113000-1740-11ea-8a3d-db9eed190719.png)
+
+
+
+---- 
+
+#### 2021-04-30 补充
+
+
+
+**maven-dependency-plugin** 的**exclude**对于包的判断有些与众不同
+
+项目包名为`com.bc`，然后有个依赖包为 `com.bc.uc` 结果我发现这个依赖包**不会**被copy。
+
+因此只能放弃 copy 插件，改为使用 assembly 提供的依赖copy，这样还少了一次copy操作

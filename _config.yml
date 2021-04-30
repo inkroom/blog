@@ -107,6 +107,8 @@ deploy:
   type: git
   repo: git@github.com:inkroom/blog.git
   branch: master
+  userName: inkbox
+  userEmail: 245900986@qq.com
 
 # 搜索
 search:
