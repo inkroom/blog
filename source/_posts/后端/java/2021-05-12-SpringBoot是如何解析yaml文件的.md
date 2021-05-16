@@ -6,13 +6,13 @@ tags: [java, yaml, SpringBoot, snakeyaml]
 
 
 
-本文旨在探寻SpringBoot解析**yaml**文件原理，掌握这一知识可以用于设计自己的配置文件格式
+本文旨在探寻SpringBoot解析**yaml**文件类库原理，而非SpringBoot本身的逻辑，掌握这一知识可以用于设计自己的配置文件格式
 
 
 
 <!-- more -->
 
-### 类库
+## 类库
 
 首先，SpringBoot是通过**PropertySourceLoader**来实现各种配置文件的加载，针对**yaml**则是**YamlPropertySourceLoader**
 
@@ -399,7 +399,7 @@ private void fetchMoreTokens() {
 
 此时调用来到了`PraseImpl`的第195行，此时处在一个内部类中`private class ParseImplicitDocumentStart implements Production`
 
-这里有个接口`Production`，注释说明这个接口用于语法转换。我的理解就是用来处理Token的
+这里有个接口`Production`，注释说明这个接口用于语法转换。我的理解就是用来处理Token的，处理完成后返回Event，同时注册下一个`Production`
 
 此外还有一个`Event`，这个类就是一个基本单元，表明现在处于读写的什么状态上，这里面会存放数据快照
 
@@ -425,7 +425,62 @@ private void fetchMoreTokens() {
     }
 ```
 
+要注意一下方法命名规则，**peek**是获取当前Event，如果没有就根据实际情况去扫描文件转换一个Event出来，**get**是获取当前Event，同时清除Event，之后调用**peek**就会一定去扫描文件了
+
 ---
 
 继续回退之后，这些还只是在 `checkData`，还没有去获取数据
+
+### 数据封装
+
+在`getData`方法中去获取数据，并封装
+
+入口定位为`Compose.getNode()` 方法，这里又有一个新的类`Node`。这个可以看作一颗树，但是根据每个节点的类型不同，子树结构会有一些变化。
+
+那么对于树结构来说，递归就是常规用法了。
+
+主要方法就是`Node composeNode(Node parent)`。这个方法相当于一个总的递归入口，里面还会根据不同情况继续分发方法，比如`Node composeScalarNode(String anchor)`、` Node composeSequenceNode(String anchor) `、`Node composeMappingNode(String anchor)`
+
+
+
+拿最常见的mapping来说明，假设现在有下面这样一个配置
+
+```yaml
+logging:
+	com: debug
+```
+
+
+
+```java
+//此时node应该就是logging，childdren代表node底下还可能有的数据存储
+protected void composeMappingChildren(List<NodeTuple> children, MappingNode node) {
+    	Node itemKey = composeKeyNode(node);//这里获取key，此处就应该是com
+        if (itemKey.getTag().equals(Tag.MERGE)) {
+            node.setMerged(true);
+        }
+        Node itemValue = composeValueNode(node);//这里获取value，此处就应该是debug，同时这些方法都是递归调用，也就允许一直往下
+        children.add(new NodeTuple(itemKey, itemValue));//这里就是把com: debug 作为children存入
+}
+```
+
+---
+
+最终读取到的结果就是一个树结构，但是spring中实际使用是都是普通的kv结构，所以还需要进行一个转换。
+
+这一过程交给了`YamlProcessor`的`boolean process(Map<String, Object> map, MatchCallback callback)`方法，这里就属于spring的内容了，不在研究范围内
+
+
+
+## 总结
+
+
+
+- **snake**一次读取若干字节，从里面剔除非法字符、注释
+- 逐字扫描，确定字符类型和接下来的操作
+- 将扫描出来的字符封装成Token，交给`Parse`转换成Event
+- 再将Event做封装成Node，将Node组成一棵树交给Spring
+- Spring再把树做扁平化处理，用于后续流程
+
+虽然在这里是自下向顶的，但是实际流程是**自顶向下**执行的。本文只为探究基本原理，因此源码中大量的细节未曾涉及，感兴趣的可以自行研究
 
