@@ -67,6 +67,7 @@ index2_generator:
   exclude:
     - category note
     - tag note
+    - tag editing
 # Category & Tag
 default_category: uncategorized
 category_map:
