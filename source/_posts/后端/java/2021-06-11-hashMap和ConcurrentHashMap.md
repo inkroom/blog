@@ -4,6 +4,8 @@ date: 2021-06-11 10:48:52
 tags: [java, HashMap, 并发]
 ---
 
+关于HashMap和ConcurrentHashMap的一些记录
+
 <!-- more -->
 
 ### HashMap
