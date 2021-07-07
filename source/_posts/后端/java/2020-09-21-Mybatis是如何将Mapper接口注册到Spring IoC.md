@@ -1,6 +1,5 @@
 ---
-layout: mybatis是如何将mapper接口注册到spring
-title: IoC的
+title: mybatis是如何将mapper接口注册到spring
 date: 2020-09-21 10:34:17
 tags: [java, 后端, mybatis]
 ---
@@ -41,7 +40,7 @@ mybatis通过该类注入一个 `BeanDefinitionRegistryPostProcessor` 的实现�
 
 通过`MapperProxy`实现代理，所以逻辑都在`MapperProxy`里
 
-### ### MapperMethod
+### MapperMethod
 
 在`MapperProxy`里会创建`MapperMethod`，这个类才是执行相关方法的核心类
 
