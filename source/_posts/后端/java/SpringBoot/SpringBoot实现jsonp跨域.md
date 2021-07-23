@@ -270,8 +270,11 @@ public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter() {
   //    处理long类型，防止前台出现精度丢失问题
     module.addSerializer(Long.class, new JsonSerializer<Long>() {
         @Override
-        public void serialize(Long anEnum, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-            jsonGenerator.writeString(String.valueOf(anEnum));
+        public void serialize(Long anEnum, JsonGenerator gen, SerializerProvider serializerProvider) throws IOException {
+            if (gen.getOutputContext().getCurrentName() == null) {//单纯的序列化一个字符串，而非一个field对应的value
+                gen.writeRaw(String.valueOf(anEnum));
+            } else
+                gen.writeString(String.valueOf(anEnum));
         }
     });
 
