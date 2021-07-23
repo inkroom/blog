@@ -279,7 +279,7 @@ public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter() {
         //用于处理返回一个String类型时，不加上双引号
         @Override
         public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            if (gen.getOutputContext().getCurrentName() == null) {//单纯的序列化一个字符串，而非一个field对应的value
+            if (gen.getOutputContext().getParent() == null) {//单纯的序列化一个字符串，而非一个field对应的value
                 gen.writeRaw(value);
             } else
                 gen.writeString(value);

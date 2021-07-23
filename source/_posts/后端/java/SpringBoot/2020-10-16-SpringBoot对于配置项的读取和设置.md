@@ -236,9 +236,9 @@ public class EncryptPropertySourcesPlaceholderConfigurer extends PropertySources
 
 ```java
 @Bean("propertySourcesPlaceholderConfigurer")
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new EncryptPropertySourcesPlaceholderConfigurer();
-    }
+public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+	return new EncryptPropertySourcesPlaceholderConfigurer();
+}
 ```
 
 Spring通过`StringValueResolver`来实现配置项的注入。
@@ -285,9 +285,39 @@ Spring通过`StringValueResolver`来实现配置项的注入。
 
 
 
+---
+
+**2021-07-23 补充**
+
+我在尝试实现一个需求 替换配置文件中的某个配置项时，发现一个更为简洁的方案。
+
+步骤如下
+
+- 创建一个`EnvironmentPostProcessor`实现类，基本代码如下
+> ```java
+> public class PortEnvironmentPostProcessor implements EnvironmentPostProcessor {
+>     @Override
+>     public void postProcessEnvironment(ConfigurableEnvironment environment, S> pringApplication application) {
+>         Properties properties = new Properties();
+>         int availableTcpPort = SocketUtils.findAvailableTcpPort(6001, 12999);
+> 
+>         properties.put("management.server.port",availableTcpPort);
+>         properties.put("eureka.instance.metadata-map.management.port",availableTcpPort);
+>         PropertiesPropertySource source = new PropertiesPropertySource("CONSUME", properties);
+>         environment.getPropertySources().addFirst(source);
+>     }
+> }
+> 
+> ```
+
+- 创建**META-INF/spring.factories**文件，内容如下
+> org.springframework.boot.env.EnvironmentPostProcessor=cn.inkroom.study.cloud.gateway.PortEnvironmentPostProcessor
 
 
+需要特别注明几点：
 
+- 是否覆盖原本配置文件中的某个配置项是有调用**addFirst**还是**addLast**方法决定的，越在前面的优先级越高
+- 默认情况下，自定义的`PortEnvironmentPostProcessor`总是在第一个被调用，因此无法获取其他配置项，意思是不能用于加解密，但是可以用于提供一些来自别的途径，较为动态的配置项
 
 
 
