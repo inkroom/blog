@@ -214,3 +214,10 @@ path指定第三方依赖目录
 项目包名为`com.bc`，然后有个依赖包为 `com.bc.uc` 结果我发现这个依赖包**不会**被copy。
 
 因此只能放弃 copy 插件，改为使用 assembly 提供的依赖copy，这样还少了一次copy操作
+
+#### 2021-07-19 补充
+
+使用**assembly**或者**maven-dependency-plugin**有个问题，会把scope为**test**的依赖一并copy打包，指定scope=runtime也不好用，于是升级插件版本到3.3.0，就ok了
+
+但是**maven-dependency-plugin**有`<includeScpre>`可以排除test环境的包
+

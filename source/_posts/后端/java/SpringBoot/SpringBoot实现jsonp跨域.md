@@ -255,10 +255,50 @@ public class MvcConfig implements WebMvcConfigurer {
 
 ```
 
-### todo
+---
 
-暂时不明白为什么需要两个类搭配使用
+**2021-07-23 补充**
+
+再次使用该方案实现某功能时，由于我忘了已经解决过双引号问题，于是我又想办法解决了一次，这次的方案更加简单，代码如下
+
+
+```
+ @Bean
+public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    SimpleModule module = new SimpleModule();
+  //    处理long类型，防止前台出现精度丢失问题
+    module.addSerializer(Long.class, new JsonSerializer<Long>() {
+        @Override
+        public void serialize(Long anEnum, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            jsonGenerator.writeString(String.valueOf(anEnum));
+        }
+    });
+
+    module.addSerializer(String.class, new JsonSerializer<String>() {
+        //用于处理返回一个String类型时，不加上双引号
+        @Override
+        public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            if (gen.getOutputContext().getCurrentName() == null) {//单纯的序列化一个字符串，而非一个field对应的value
+                gen.writeRaw(value);
+            } else
+                gen.writeString(value);
+
+        }
+    });
+    objectMapper.registerModule(module);
+
+    return new MappingJackson2HttpMessageConverter(objectMapper);
+}
+
+```
+
+这次是对序列化工具`ObjectMapper`下手，该方案更加友好，而且`ObjectMapper`还可以用在别的地方，不单局限在类型转换上
+
+
 
 ### 代码
 
 具体实现可查阅[github](https://github.com/inkroom/SpringBoot-study/commit/3eb6e25ecc905d8528c0d1efe11ccb818070727e)
+
+
