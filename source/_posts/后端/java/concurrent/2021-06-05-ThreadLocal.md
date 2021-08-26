@@ -21,7 +21,7 @@ tags: [java, 多线程, ThreadLocal]
 
 ## 内存泄漏
 
-**ThreadLocalMap**是通过Thread访问的，同时还是**default**权限，如果Thread结束了，那么这一部分数据将用于无法被访问。如果Thread的实例还被保存这，那么这一部分数据就有泄漏的风险。
+**ThreadLocalMap**是通过Thread访问的，同时还是**default**权限，如果Thread结束了，那么这一部分数据将用于无法被访问。如果Thread的实例还被保存着，那么这一部分数据就有泄漏的风险。
 
 ---
 
