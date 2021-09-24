@@ -484,3 +484,8 @@ protected void composeMappingChildren(List<NodeTuple> children, MappingNode node
 
 虽然在这里是自下向顶的，但是实际流程是**自顶向下**执行的。本文只为探究基本原理，因此源码中大量的细节未曾涉及，感兴趣的可以自行研究
 
+
+## 2021-09-23 补充
+
+实际上这就是一种状态机思想，我也使用这种思想实现了一个json库，具体参见[博客](http://blog.inkroom.cn/2021/09/23/AS44AY.html)
+
