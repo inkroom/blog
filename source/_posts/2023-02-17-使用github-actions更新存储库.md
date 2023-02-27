@@ -46,3 +46,105 @@ tags: [github, node]
 
 最后只需要添加图片后**push**就行了
 
+
+## 其他
+
+
+这里顺便提供一份配置，用于重建仓库以减小仓库体积
+
+在 **.github/workflows/** 下新建**clean.yml**
+
+由于需要使用ssh，还需要将ssh私钥配置到actions secrets
+
+```yaml
+name: clean
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  clean:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Encoding
+        run: |
+          git config --global i18n.logoutputencoding utf-8
+          git config --global i18n.commitencoding utf-8
+          git config --global core.quotepath false
+          git config --global http.version HTTP/1.1
+          git config --global http.postBuffer 524288000
+          export LESSCHARSET=utf-8
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{  secrets.SSH_PR }}
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+      # - name: Last Success SHA
+      #   uses: nrwl/nx-set-shas@v3
+      #   id: sha
+      #   with:
+      #     main-branch-name: "master"
+      - name: Clean
+        run: |
+          git remote set-url origin git@github.com:/inkroom/image.git
+          git config http.version HTTP/1.1
+          git config http.postBuffer 5242880000
+          git checkout --orphan clean
+          rm .github/workflows/clean.yml
+          git config user.email "enpassPixiv@protonmail.com"
+          git config user.name "inkbox"
+          #  因为一次全部commit会超出github限制,所以需要分成多次提交 首先把单独的文件都提交了
+          git rm --cached -f -r .
+          for file in *
+          do
+            if [ -f "$(pwd)/$file" ]
+            then
+              echo "添加文件 $file"
+              git add "$file"
+            fi
+          done
+
+          git commit -m "clean"
+          git branch -D master
+          git branch -m master
+          git push -f origin master
+
+          ## 文件夹依次提交
+
+          for file in *
+          do
+            if [ -d "$(pwd)/$file" ]
+            then
+              if [ "$file" != '.git' ]
+              then
+                echo "添加文件夹 $file"
+                git add "$file"
+                git commit -m "clean:$file"
+           #     git push origin master
+              fi
+            fi
+          done
+
+          echo $(git show -s --format=%H) > .github/.sha
+          git add .github/.sha
+          git commit -m "clean:sha"
+          git log
+          git push origin master
+
+
+```
