@@ -107,7 +107,7 @@ private void update() {
                 int cpIndex = (dataLength - pointer);//这里是获取本次读取在dataWindow中的起始点，从这以后的数据，就是本次读取到的数据
                 dataWindow = Arrays.copyOfRange(dataWindow, pointer, dataLength + read);//重新构建一个数组，其他目的待定
 
-                if (Character.isHighSurrogate(buffer[read - 1])) {//判断最后一个字符是否是HighSurrogate，这是unicode编码中的概念，此时需要再多读取一个字符。这里不太明白，可能需要在去学习编码知识才行
+                if (Character.isHighSurrogate(buffer[read - 1])) {//判断最后一个字符是否是HighSurrogate，这是unicode编码中的概念，此时需要再多读取一个字符。这里不太明白，可能需要再去学习编码知识才行
                     if (stream.read(buffer, read, 1) == -1) {
                         eof = true;
                     } else {
@@ -121,7 +121,7 @@ private void update() {
                     dataWindow[cpIndex] = codePoint;//赋值
                     if (isPrintable(codePoint)) {//判断这个字符是否可打印，或者说可见，如果可见则继续读取
                         i += Character.charCount(codePoint);
-                    } else {//不可见则读写结束，避怕有不可见字符导致出bug
+                    } else {//不可见则读写结束，避免有不可见字符导致出bug
                         nonPrintable = codePoint;
                         i = read;
                     }
@@ -155,7 +155,7 @@ private void update() {
 
 数据读取后，需要在组织成有意义的数据单位，这就是由 `ScannerImpl` 负责的内容
 
-上面的数据读取是有`ScannerImpl`的`private void scanToNextToken()`方法调用的。
+上面的数据读取是由`ScannerImpl`的`private void scanToNextToken()`方法调用的。
 
 这个方法的作用在于，定位到有实际意义的字符开头，跳过一些特殊字符和注释
 
