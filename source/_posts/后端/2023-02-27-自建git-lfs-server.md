@@ -48,21 +48,21 @@ git submodule add https://github.com/boazsegev/facil.io
 
 最后目录结构如下
 
-> 
-> . 
-> |-- CMakeLists.txt 
-> |-- LICENSE
-> |-- README.md
-> |-- facil.io
-> |-- include
-> |   |-- cli.h
-> |   |-- http_service.h
-> |   `-- main.h
-> `-- src
->     |-- cli.c
->     |-- http_service.c
->     `-- main.c
->
+```
+ . 
+ ├── CMakeLists.txt 
+ ├── LICENSE
+ ├── README.md
+ ├── facil.io
+ ├── include
+ │   ├── cli.h
+ │   ├── http_service.h
+ │   └── main.h
+ └── src
+     ├── cli.c
+     ├── http_service.c
+     └── main.c
+```
 
 
 
