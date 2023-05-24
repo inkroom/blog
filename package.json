@@ -8,7 +8,7 @@
     "deploy": "hexo clean && hexo deploy -g",
     "server": "hexo server",
     "dev": " node config/server.js server",
-    "new":"hexo new"
+    "new": "hexo new"
   },
   "hexo": {
     "version": "5.4.0"
