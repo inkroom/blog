@@ -109,9 +109,9 @@ deploy:
   type: git
   repo: https://github.com/inkroom/blog
   branch: master
-  userName: inkbox
-  userEmail: enpassPixiv@protonmail.com
-  token: $GH_TOKEN
+  name: 'inkbox'
+  email: 'enpassPixiv@protonmail.com'
+  token: '$GH_TOKEN'
 # Freemind.bithack
 # 搜索
 search:
