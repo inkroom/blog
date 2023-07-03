@@ -1,0 +1,44 @@
+name: release
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "md" ]
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+  pull_request:
+    branches: [ "md" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  list:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Encoding
+        run: |
+          git config --global i18n.logoutputencoding utf-8
+          git config --global i18n.commitencoding utf-8
+          git config --global core.quotepath false
+          export LESSCHARSET=utf-8
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Runtime
+        run: |
+          npm i
+      - name: Deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          npm run deploy
