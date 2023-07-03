@@ -29,6 +29,7 @@
     "hexo-renderer-marked": "^2.0.0",
     "hexo-renderer-stylus": "^1.1.0",
     "hexo-server": "^1.0.0",
+    "hexo-theme-fluid": "^1.9.5-a",
     "mozjpeg": "^7.0.0",
     "optipng-bin": "^7.0.0"
   },

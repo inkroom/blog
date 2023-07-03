@@ -8,7 +8,7 @@ subtitle: '个人博客'
 description: '墨盒的个人博客'
 keywords:
 author: inkbox
-language: zn-ch
+language: zh-CN
 timezone: ''
 
 # URL
@@ -100,7 +100,8 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next # curl -L https://api.github.com/repos/next-theme/hexo-theme-next/tarball/v8.16.0 | tar -zxv -C themes/next --strip-components=1
+# theme: next # curl -L https://api.github.com/repos/next-theme/hexo-theme-next/tarball/v8.16.0 | tar -zxv -C themes/next --strip-components=1
+theme: fluid  # 指定主题
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
