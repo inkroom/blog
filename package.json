@@ -18,7 +18,7 @@
     "hexo-all-minifier": "^0.5.3",
     "hexo-blog-encrypt": "^3.1.6",
     "hexo-cli": "^4.2.0",
-    "hexo-deployer-git": "^2.1.0",
+    "hexo-deployer-git": "^4.0.0",
     "hexo-enhancer": "^1.0.8",
     "hexo-generator-archive": "^1.0.0",
     "hexo-generator-category": "^1.0.0",

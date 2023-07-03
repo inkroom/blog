@@ -111,6 +111,7 @@ deploy:
   branch: master
   userName: inkbox
   userEmail: enpassPixiv@protonmail.com
+  token: $GH_TOKEN
 # Freemind.bithack
 # 搜索
 search:
