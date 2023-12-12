@@ -312,7 +312,7 @@ public static void main(String[] args) {
 首先在网上找了个方法，简化为命令行如下
 
 ```shell
-sudo HOSTNAME=$(hostname) echo "127.0.0.1  $HOSTNAME" >> /etc/hosts
+HOSTNAME=$(hostname) sudo echo "127.0.0.1  $HOSTNAME" >> /etc/hosts
 ```
 
 结果未生效
