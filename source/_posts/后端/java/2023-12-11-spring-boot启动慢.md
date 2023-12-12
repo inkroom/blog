@@ -321,8 +321,13 @@ sudo HOSTNAME=$(hostname) echo "127.0.0.1  $HOSTNAME" >> /etc/hosts
 
 发现了[这篇文章](https://zhuanlan.zhihu.com/p/570660615)
 
-其 hosts 文件写法和我的不一样，修改一下再测试，成功
+其 hosts 文件写法和我的不一样
 
+```
+127.0.0.1   localhost Mac-mini.local
+```
+
+修改一下再测试，成功
 
 ---
 
