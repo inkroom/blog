@@ -162,7 +162,7 @@ ghcr.io/inkroomtemp/rust:amd64 is a manifest list
 
 到处都找不到这个配置的文档，只能放弃
 
-## 方案三
+## 方案四
 
 这个方案来自[issues](https://github.com/docker/build-push-action/issues/846)
 
