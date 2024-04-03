@@ -153,7 +153,7 @@ ghcr.io/inkroomtemp/rust:amd64 is a manifest list
 ## 方案三
 
 
-研究一番后，发现[build-push-action](https://github.com/docker/build-push-action/)再readme里提供了一个并行构建的[样例](https://docs.docker.com/build/ci/github-actions/multi-platform/)
+研究一番后，发现[build-push-action](https://github.com/docker/build-push-action/)在readme里提供了一个并行构建的[样例](https://docs.docker.com/build/ci/github-actions/multi-platform/)
 
 
 ---
@@ -179,4 +179,13 @@ ghcr.io/inkroomtemp/rust:amd64 is a manifest list
 研究半天，最终还是回到方案三
 
 发现最开始的错误原因是我在初步构建的时候给了tag和image，这个和outputs里的配置冲突了，去掉就可以正常使用了
+
+
+## 2024-04-03
+
+
+使用中发现一个奇怪的问题:使用qemu模拟i386,dockerfile中使用命令`arch`返回的是x86_64,但是包管理器和命令`dpkg --print-architecture`能返回i386
+
+没找到原因和解决方案,只能不构建这个架构
+
 
