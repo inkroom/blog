@@ -1,19 +1,29 @@
-# 只支持x86架构,因为 optipng-bin mozjpeg 不支持arm架构 被hexo-all-minifier引入 https://github.com/imagemin/optipng-bin/blob/main/lib/index.js
 FROM debian:bookworm-20240311-slim
 ARG NODE_VERSION=18.18.0
-ARG NODE_DIST=linux-x64
 ARG NODE_HOME=/usr/local/lib/nodejs
 ARG NODE_MIRROR=https://registry.npmmirror.com/
-
-ENV PATH ${NODE_HOME}/node-v${NODE_VERSION}-${NODE_DIST}/bin:$PATH
+ENV CPPFLAGS=-DPNG_ARM_NEON_OPT=0
+ENV PATH=${NODE_HOME}/bin:$PATH
 #RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && apt update -y && apt install -y curl
-RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources && apt  update -y && apt install -y curl autoconf automake libtool libpng-dev make gcc g++ nasm jq git
-RUN mkdir -p ${NODE_HOME} && curl -sL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-${NODE_DIST}.tar.gz | tar xz -C ${NODE_HOME}  \
-  && ${NODE_HOME}/node-v${NODE_VERSION}-${NODE_DIST}/bin/node -v && node -v && npm -v \
-  && npm config set registry ${NODE_MIRROR} \
-  && npm i -g nrm 
+RUN sed -i 's/deb.debian.org/mirror.sjtu.edu.cn/g' /etc/apt/sources.list.d/debian.sources && apt  update -y && apt install -y curl autoconf automake libtool libpng-dev make gcc g++ nasm jq git wget pkg-config vim && git config --global core.editor "vim"
+RUN mkdir -p ${NODE_HOME} ; \
+ dpkgArch="$(dpkg --print-architecture)"; \
+    case "${dpkgArch##*-}" in \
+        amd64) export NODE_DIST='linux-x64';; \
+        armhf) export NODE_DIST='linux-armv7l'  ;; \
+        arm64) export NODE_DIST='linux-arm64'  ;; \
+        i386) echo "not install node" ; exit 101 ;; \
+        s390x) export NODE_DIST='linux-s390x' ;; \
+        *) echo >&2 "unsupported architecture: ${dpkgArch}" ; exit 101 ;; \
+    esac; \
+ wget -q https://nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-${NODE_DIST}.tar.gz \ 
+ && tar -zxf node-v${NODE_VERSION}-${NODE_DIST}.tar.gz -C ${NODE_HOME} --strip-components 1 \
+ && rm -rf node-v${NODE_VERSION}-${NODE_DIST}.tar.gz && ${NODE_HOME}/bin/node -v \
+ && node -v && npm -v  \
+ && npm config set registry ${NODE_MIRROR}   && npm i -g nrm 
+
 COPY . /app
 WORKDIR /app
-RUN if [ "$(arch)" = "aarch64"  ]; then echo "aarch 需要修改package.json" && jq 'del(.dependencies."hexo-all-minifier") | del(.dependencies.mozjpeg) |del(.dependencies."optipng-bin")' package.json > p2.json && mv p2.json package.json && cat package.json; fi
 
-RUN  npm i 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
